@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "API REST para gerenciamento de produtos com TypeScript",
   "main": "dist/server.js",
+
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "npm run build && node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed": "ts-node --project tsconfig.json prisma/seed.ts"
   },
+
   "keywords": [
     "api",
     "rest",
@@ -16,8 +19,9 @@
     "jwt",
     "typescript"
   ],
-  "author": "",
+
   "license": "ISC",
+
   "dependencies": {
     "@prisma/client": "^6.18.0",
     "bcryptjs": "^2.4.3",
@@ -33,9 +37,11 @@
     "ratelimit": "^0.0.4",
     "zod": "^4.1.12"
   },
+
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "npm run seed"
   },
+
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
