@@ -2,7 +2,6 @@
 import jwt, { SignOptions, JwtPayload } from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import helmet from "helmet"
-import cors from "cors"
 import rateLimit from "express-rate-limit"
 import { Express } from "express"
 
@@ -42,19 +41,7 @@ export const applySecurityConfig = (app: Express) => {
       contentSecurityPolicy: false,
       crossOriginEmbedderPolicy: false,
     })
-  )
-
-  
-  app.use(
-  cors({
-    origin: "*", // Libera para todos os domínios (somente para desenvolvimento)
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-app.options("*", cors());
-
+  );
 
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, 
@@ -64,5 +51,8 @@ app.options("*", cors());
     message: "Too many requests from this IP, please try again later.",
   })
   app.use("/api", limiter)
+};
 
-}
+
+
+
