@@ -1,4 +1,4 @@
-import express from "express";
+
 import dotenv from "dotenv";
 import { connectDatabase, prisma } from "./config/prisma";
 import { applySecurityConfig } from "./config/securityConfig";
