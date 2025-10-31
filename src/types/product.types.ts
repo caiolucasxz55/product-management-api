@@ -5,6 +5,8 @@ export interface Product {
   price: number;
   description: string | null;  
   imageUrl: string | null;
+  category: string | null;  // 🆕
+  rating: number | null;  
   createdAt: Date;
   updatedAt: Date;
   userId: number | null;  

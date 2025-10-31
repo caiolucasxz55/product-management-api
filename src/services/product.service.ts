@@ -1,11 +1,9 @@
-// src/services/product.service.ts
+
 import { prisma } from "../config/prisma";
 import { Product, Prisma } from "@prisma/client";
 
 export const ProductService = {
-  /**
-   * Lista todos os produtos cadastrados.
-   */
+  
   getAll: async (): Promise<Product[]> => {
     const products = await prisma.product.findMany({
       include: {
@@ -18,9 +16,7 @@ export const ProductService = {
     return products;
   },
 
-  /**
-   * Busca um produto específico pelo ID.
-   */
+  
   getById: async (id: number): Promise<Product | null> => {
     const product = await prisma.product.findUnique({
       where: { id },
@@ -33,9 +29,7 @@ export const ProductService = {
     return product;
   },
 
-  /**
-   * Cria um novo produto no banco de dados.
-   */
+ 
   create: async (
     payload: Omit<Product, "id" | "createdAt" | "updatedAt">
   ): Promise<Product> => {
@@ -43,9 +37,11 @@ export const ProductService = {
       data: {
         name: payload.name,
         price: payload.price,
-        description: payload.description,
-        imageUrl: payload.imageUrl, 
-        userId: payload.userId,
+        description: payload.description ?? null,
+        imageUrl: payload.imageUrl ?? null,
+        category: payload.category ?? null, 
+        rating: payload.rating ?? null,     
+        userId: payload.userId ?? null,
       },
       include: {
         user: {
@@ -56,9 +52,7 @@ export const ProductService = {
     return newProduct;
   },
 
-  /**
-   * Atualiza um produto existente.
-   */
+  
   update: async (
     id: number,
     payload: Partial<Product>
@@ -69,9 +63,11 @@ export const ProductService = {
         data: {
           name: payload.name,
           price: payload.price,
-          description: payload.description,
-          imageUrl: payload.imageUrl, // ✅ permite atualizar a imagem
-          userId: payload.userId,
+          description: payload.description ?? null,
+          imageUrl: payload.imageUrl ?? null,
+          category: payload.category ?? null, 
+          rating: payload.rating ?? null,     
+          userId: payload.userId ?? null,
         },
         include: {
           user: {
@@ -85,15 +81,13 @@ export const ProductService = {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return null; // Produto não encontrado
+        return null; 
       }
       throw error;
     }
   },
 
-  /**
-   * Exclui um produto do banco de dados.
-   */
+  
   delete: async (id: number): Promise<Product | null> => {
     try {
       const deletedProduct = await prisma.product.delete({
