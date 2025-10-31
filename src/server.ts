@@ -1,31 +1,11 @@
-
 import dotenv from "dotenv";
 import { connectDatabase, prisma } from "./config/prisma";
 import { applySecurityConfig } from "./config/securityConfig";
 import app from "./app";
-import express from "express";
-import cors from "cors";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000", 
-      "http://localhost:3001", 
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-
-app.options("*", cors());
-
-
-app.use(express.json());
 
 async function startServer() {
   try {
@@ -35,6 +15,7 @@ async function startServer() {
       const { execSync } = await import("child_process");
       execSync("npx prisma migrate deploy", { stdio: "inherit" });
     }
+
     // 🔐 Configura middlewares de segurança globais
     applySecurityConfig(app);
 
@@ -44,6 +25,8 @@ async function startServer() {
     // 🚀 Inicia o servidor
     app.listen(PORT, () => {
       console.log(`✅ Server running at http://localhost:${PORT}`);
+      console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🌐 CORS enabled for: ${process.env.CORS_ORIGIN || 'localhost origins'}`);
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error);
