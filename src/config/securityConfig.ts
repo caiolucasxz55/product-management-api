@@ -46,13 +46,15 @@ export const applySecurityConfig = (app: Express) => {
 
   
   app.use(
-    cors({
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: false, 
-    })
-  );
+  cors({
+    origin: "*", // Libera para todos os domínios (somente para desenvolvimento)
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.options("*", cors());
+
 
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, 

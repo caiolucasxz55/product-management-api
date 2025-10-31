@@ -12,23 +12,23 @@ model User {
   username  String    @unique
   password  String
   role      Role      @default(USER)
-  products  Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  products  Product[]
 
   @@map("users")
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   price       Float
   description String?
-  imageUrl    String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   userId      Int?
-  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  imageUrl    String?
+  user        User?    @relation(fields: [userId], references: [id])
 
   @@map("products")
 }

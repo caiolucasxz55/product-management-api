@@ -3,10 +3,22 @@ import dotenv from "dotenv";
 import { connectDatabase, prisma } from "./config/prisma";
 import { applySecurityConfig } from "./config/securityConfig";
 import app from "./app";
+import express from "express";
+import cors from "cors";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.options("*", cors());
+
+app.use(express.json());
 
 async function startServer() {
   try {
