@@ -1,4 +1,3 @@
-// src/controllers/product.controller.ts
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.service";
 
@@ -41,7 +40,7 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { name, price, description } = req.body;
+    const { name, price, description, category, rating } = req.body;
 
     // Validações
     if (!name || !price) {
@@ -55,10 +54,7 @@ export const createProduct = async (req: Request, res: Response) => {
         .json({ message: "Preço deve ser um número positivo" });
     }
 
-    // Pega o userId do usuário autenticado (vem do middleware de autenticação)
     const userId = req.user?.id ?? null;
-
-    // Caminho da imagem (caso tenha sido enviada)
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
     const created = await ProductService.create({
@@ -66,6 +62,8 @@ export const createProduct = async (req: Request, res: Response) => {
       price: numericPrice,
       description: description ?? null,
       imageUrl,
+      category: category ?? null, // 🆕 incluído
+      rating: rating ? parseFloat(rating) : null, // 🆕 incluído
       userId,
     });
 
@@ -82,7 +80,7 @@ export const createProduct = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const { name, price, description, imageUrl } = req.body;
+    const { name, price, description, imageUrl, category, rating } = req.body;
 
     if (isNaN(id)) {
       return res.status(400).json({ message: "ID inválido" });
@@ -101,6 +99,12 @@ export const updateProduct = async (req: Request, res: Response) => {
           .json({ message: "Preço deve ser um número positivo" });
       }
       updates.price = numericPrice;
+    }
+
+    if (category !== undefined) updates.category = category; // 🆕 incluído
+    if (rating !== undefined) {
+      const numericRating = parseFloat(rating);
+      if (!isNaN(numericRating)) updates.rating = numericRating; // 🆕 incluído
     }
 
     if (req.file) {
