@@ -24,7 +24,7 @@ model Product {
   name        String
   price       Float
   description String?
-  category    String?     // 🆕 nova coluna
+  category    String?     
   rating      Float? 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
