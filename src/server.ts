@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { connectDatabase, prisma } from "./config/prisma";
-import { applySecurityConfig } from "./config/securityConfig";
+// import { applySecurityConfig } from "./config/securityConfig";
 import app from "./app";
 
 dotenv.config();
@@ -17,7 +17,7 @@ async function startServer() {
     }
 
     // 🔐 Configura middlewares de segurança globais
-    applySecurityConfig(app);
+    // applySecurityConfig(app);
 
     // 🌐 Conecta ao banco de dados
     await connectDatabase();
