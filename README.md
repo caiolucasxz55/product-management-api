@@ -1,71 +1,257 @@
-# Product Management API
+# Produtos API – Docker Compose Deployment
 
-Este é o backend da **Product Management API**, uma solução para gerenciar produtos, inventário e operações de pequenas/médias empresas.
+API REST para gerenciamento de produtos desenvolvida com **Node.js, Express, TypeScript e Prisma ORM**, utilizando **PostgreSQL** como banco de dados.
 
-## 🧩 Tecnologias
+Este projeto demonstra a **containerização de uma aplicação backend utilizando Docker Compose**, permitindo um ambiente reproduzível, escalável e padronizado para desenvolvimento e execução.
 
-- Node.js + TypeScript  
-- Prisma como ORM  
-- Banco de dados relacional suportado (ex: PostgreSQL, MySQL)  
-- Estrutura modular para rotas e serviços de produto  
-- Integração com autenticação/controle de acesso (se aplicável)  
+---
 
-## 🚀 Instalação
+# Tecnologias Utilizadas
 
-1. Clone o repositório  
-   ```bash
-   git clone https://github.com/caiolucasxz55/product-management-api.git
-   cd product-management-api
-Instale as dependências
+* Node.js
+* Express
+* TypeScript
+* Prisma ORM
+* PostgreSQL
+* Docker
+* Docker Compose
 
-bash
-Copiar código
-npm install
-Configure o banco de dados
+---
 
-Crie um arquivo .env baseado em .env.example (se existir)
+# Arquitetura do Projeto
 
-Defina a variável DATABASE_URL para sua instância de banco de dados
+A aplicação foi containerizada utilizando **Docker Compose**, separando os serviços em containers independentes.
 
-Execute as migrações do Prisma
+## Arquitetura Containerizada
 
-bash
-Copiar código
-npx prisma migrate dev
-Inicie o servidor em modo de desenvolvimento
+```mermaid
+flowchart TB
 
-bash
-Copiar código
-npm run dev
-📦 Scripts úteis
-npm run dev — Inicia o servidor em modo de desenvolvimento
+    Client[Client / Browser]
 
-npm run build — Compila o código para produção
+    subgraph Host System
+        direction TB
 
-npm run start — Inicia o servidor em produção (após build)
+        subgraph Docker Compose Environment
+            direction LR
 
-npx prisma studio — Abre o painel do Prisma Studio para visualizar/modificar dados
+            subgraph API Container
+                Node[Node.js Runtime]
+                Express[Express REST API]
+                Prisma[Prisma ORM]
+            end
 
-🛠️ Uso
-Acesse a rota base da API (ex: http://localhost:3000/api/products)
+            subgraph Database Container
+                Postgres[(PostgreSQL Database)]
+            end
+        end
 
-Configure filtros e parâmetros como categoria, página, ordenação etc.
+        Volume[(Persistent Volume<br>postgres_data)]
+    end
 
-Endpoints comuns:
+    Client -->|HTTP :3000| Express
+    Express --> Prisma
+    Prisma -->|SQL Queries| Postgres
+    Postgres --> Volume
+```
 
-GET /api/products — lista produtos
+---
 
-GET /api/products/:id — obtém detalhes de um produto
+# Estrutura do Projeto
 
-POST /api/products — cria um novo produto
+```
+project
+│
+├── prisma
+│   ├── migrations
+│   └── schema.prisma
+│
+├── src
+│   ├── controllers
+│   ├── routes
+│   ├── services
+│   └── server.ts
+│
+├── Dockerfile
+├── docker-compose.yml
+├── package.json
+└── README.md
+```
 
-PUT /api/products/:id — atualiza um produto existente
+---
 
-DELETE /api/products/:id — remove um produto
+# Serviços do Docker Compose
 
-(Ajuste as rotas conforme a implementação atual.)
+O projeto utiliza dois containers principais:
 
-🔐 Autenticação & Permissões
-Se aplicável, usuários com papel ADMIN podem criar/editar/excluir produtos.
-Usuários comuns podem apenas visualizar.
-(Implemente/ajuste a autenticação conforme sua camada de segurança.)
+| Serviço | Descrição                        |
+| ------- | -------------------------------- |
+| **app** | API Node.js com Express e Prisma |
+| **db**  | Banco de dados PostgreSQL        |
+
+---
+
+# Variáveis de Ambiente
+
+Exemplo utilizado pelo projeto:
+
+```
+DATABASE_URL=postgresql://postgres:postgres@db:5432/appdb
+PORT=3000
+```
+
+---
+
+# Executando o Projeto
+
+## Pré-requisitos
+
+* Docker instalado
+* Docker Compose instalado
+
+---
+
+## Clonar o repositório
+
+```
+git clone <URL_DO_REPOSITORIO>
+cd produtos-api
+```
+
+---
+
+## Subir os containers
+
+```
+docker compose up --build
+```
+
+Esse comando irá:
+
+1. Construir a imagem da aplicação
+2. Iniciar o container do PostgreSQL
+3. Criar a rede entre containers
+4. Aplicar as migrations do Prisma
+5. Iniciar o servidor da API
+
+---
+
+# Acessando a API
+
+Após iniciar os containers, a API estará disponível em:
+
+```
+http://localhost:3000
+```
+
+---
+
+# Comandos Úteis do Docker
+
+Subir containers:
+
+```
+docker compose up
+```
+
+Parar containers:
+
+```
+docker compose down
+```
+
+Rebuild da aplicação:
+
+```
+docker compose up --build
+```
+
+Listar containers:
+
+```
+docker ps
+```
+
+---
+
+# Persistência de Dados
+
+O banco de dados utiliza um **volume Docker** para garantir persistência dos dados.
+
+```
+postgres_data
+```
+
+Isso permite que os dados continuem existindo mesmo após reiniciar os containers.
+
+---
+
+# Healthcheck
+
+O container do PostgreSQL utiliza um **healthcheck** para garantir que o banco esteja pronto antes da aplicação iniciar.
+
+---
+
+# Segurança
+
+A aplicação é executada dentro do container utilizando um **usuário não-root**, seguindo boas práticas de segurança em ambientes containerizados.
+
+---
+
+# Troubleshooting
+
+## Porta 5432 já em uso
+
+Se ocorrer o erro:
+
+```
+Bind for 5432 failed: port is already allocated
+```
+
+Altere a porta do PostgreSQL no `docker-compose.yml`.
+
+Exemplo:
+
+```
+5433:5432
+```
+
+---
+
+## Erro de permissão no TypeScript build
+
+Garantir que o Dockerfile atribua permissões para o usuário da aplicação:
+
+```
+chown -R appuser:appgroup /app
+```
+
+---
+
+# Evidência de Funcionamento
+
+Após subir os containers, é possível verificar:
+
+Containers ativos:
+
+```
+docker ps
+```
+
+Conexão com o banco:
+
+```
+docker exec -it dimdim-postgres psql -U postgres -d appdb
+```
+
+---
+
+# Objetivo Acadêmico
+
+Este projeto foi desenvolvido como parte da disciplina **DevOps Tools & Cloud Computing**, demonstrando a migração de uma aplicação tradicional para uma arquitetura baseada em containers utilizando **Docker Compose**.
+
+---
+
+# Autor
+
+Projeto desenvolvido para fins acadêmicos.
